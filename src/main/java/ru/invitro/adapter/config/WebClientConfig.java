@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import ru.invitro.adapter.model.exceptions.CustomApiException;
+import ru.invitro.adapter.model.exception.CustomApiException;
 
 import java.time.ZonedDateTime;
 
@@ -20,7 +20,7 @@ public class WebClientConfig {
     @Value("${ru.invitro.edm.service.url}")
     public String EDM_URL;
     @Value("${ru.invitro.contact.service.url}")
-    public String LK3_URL;
+    public String CONTACTS_URL;
 
     public WebClient.RequestBodySpec prepareRequest(String url, HttpMethod method, String contentHeader) {
         return INSTANCE.method(method)

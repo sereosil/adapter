@@ -6,12 +6,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import ru.invitro.adapter.model.phone.CodeRequestDTO;
 import ru.invitro.adapter.model.phone.CodeSendRequestDTO;
 import ru.invitro.adapter.model.phone.PhoneSaveRequestModel;
+import ru.invitro.adapter.service.PhoneService;
 
 
 @Api(tags = "Phone Controller")
@@ -19,7 +19,8 @@ import ru.invitro.adapter.model.phone.PhoneSaveRequestModel;
 @RequestMapping(value = "/phone", produces = "application/json")
 public class PhoneController {
 
-    private final WebClient client = WebClient.builder().build();
+    @Autowired
+    private PhoneService phoneService;
 
     @Operation(description = "Формирует запрос на создание телефона контакта в ЛК")
     @ApiResponses(value = {
@@ -30,14 +31,7 @@ public class PhoneController {
     public String createPhone(@RequestBody PhoneSaveRequestModel model,
                               @RequestParam String contactId,
                               @RequestParam String visibilityScope) {
-        return client.post().uri("http://10.10.10.35:8088/rest/api/v1/contacts/" + contactId + "/phones?" + "visibilityScopeId=" + visibilityScope)
-                .bodyValue(model)
-                .exchangeToMono(clientResponse -> {
-                    if (clientResponse.statusCode().isError()) {
-                        clientResponse.body((clientHttpResponse, context) -> clientHttpResponse.getBody());
-                    }
-                    return clientResponse.bodyToMono(String.class);
-                }).block();
+        return phoneService.createPhone(model, contactId, visibilityScope);
     }
 
     @Operation(description = "Формирует запрос удаление телефона контакта в ЛК")
@@ -49,13 +43,7 @@ public class PhoneController {
     public String deletePhone(@RequestParam String contactId,
                               @RequestParam String visibilityScope,
                               @RequestParam String phoneId) {
-        return client.delete().uri("http://10.10.10.35:8088/rest/api/v1/contacts/" + contactId + "/phones/" + phoneId + "?visibilityScopeId=" + visibilityScope)
-                .exchangeToMono(clientResponse -> {
-                    if (clientResponse.statusCode().isError()) {
-                        clientResponse.body((clientHttpResponse, context) -> clientHttpResponse.getBody());
-                    }
-                    return clientResponse.bodyToMono(String.class);
-                }).block();
+        return phoneService.deletePhone(contactId, visibilityScope, phoneId);
     }
 
     @Operation(description = "Формирует запрос на создание телефона контакта в ЛК")
@@ -68,12 +56,7 @@ public class PhoneController {
                               @RequestParam String contactId,
                               @RequestParam String visibilityScope) {
 
-        return client.post().uri("http://10.10.10.35:8088/rest/api/v1/contacts/" + contactId + "/phones/codes?" + "visibilityScopeId=" + visibilityScope)
-                .bodyValue(code)
-                .exchangeToMono(clientResponse ->
-                        clientResponse.statusCode().isError() ? clientResponse.createException().flatMap(Mono::error) :
-                                clientResponse.bodyToMono(String.class))
-                .block();
+        return phoneService.sendSMSCode(code, contactId, visibilityScope);
     }
 
     @Operation(description = "Формирует запрос в ЛК на направление СМС кода для подтверждения номера телефона.")
@@ -86,11 +69,6 @@ public class PhoneController {
                                @RequestParam String contactId,
                                @RequestParam String visibilityScope) {
 
-        return client.post().uri("http://10.10.10.35:8088/rest/api/v1/contacts/" + contactId + "/phones/validate?" + "visibilityScopeId=" + visibilityScope)
-                .bodyValue(code)
-                .exchangeToMono(clientResponse ->
-                        clientResponse.statusCode().isError() ? clientResponse.createException().flatMap(Mono::error) :
-                                clientResponse.bodyToMono(String.class))
-                .block();
+        return phoneService.validateCode(code, contactId, visibilityScope);
     }
 }

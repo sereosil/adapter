@@ -1,4 +1,4 @@
-package ru.invitro.adapter.model.exceptions;
+package ru.invitro.adapter.model.exception;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.v3.oas.annotations.media.Schema;

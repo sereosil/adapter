@@ -16,7 +16,7 @@ public class MailService {
     public String createMail(MailSaveRequestModel model,
                              String contactId,
                              String visibilityScopeId) {
-        String url = clientConfig.LK3_URL + contactId + "/emails?" + "visibilityScopeId=" + visibilityScopeId;
+        String url = clientConfig.CONTACTS_URL + "/contacts" + contactId + "/emails?" + "visibilityScopeId=" + visibilityScopeId;
         return clientConfig.prepareRequest(url, HttpMethod.POST, MediaType.APPLICATION_JSON_VALUE)
                 .bodyValue(model)
                 .retrieve()
@@ -27,7 +27,7 @@ public class MailService {
     public String deleteMail(String contactId,
                              String visibilityScopeId,
                              String emailId) {
-        String url = clientConfig.LK3_URL  + contactId + "/emails/" + emailId + "?visibilityScopeId=" + visibilityScopeId;
+        String url = clientConfig.CONTACTS_URL + "/contacts" + contactId + "/emails/" + emailId + "?visibilityScopeId=" + visibilityScopeId;
         return clientConfig.prepareRequest(url, HttpMethod.DELETE, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve()
                 .bodyToMono(String.class)

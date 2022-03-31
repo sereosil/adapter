@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.invitro.adapter.model.exceptions.CustomApiException;
+import ru.invitro.adapter.model.exception.CustomApiException;
 import ru.invitro.adapter.model.mail.MailSaveRequestModel;
 import ru.invitro.adapter.service.MailService;
 

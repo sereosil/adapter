@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.invitro.adapter.service.EdmConnectionService;
 
-import java.util.UUID;
-
 @Api(tags = "Connect Controller")
 @RestController
 @RequestMapping(value = "/adapter")
@@ -47,8 +45,9 @@ public class EdmConnectionController {
     @PostMapping(value = "/connectToEDM", produces = {"text/plain"})
     @ResponseBody
     public String connectToEDM(@RequestParam String clientId,
-                               @RequestParam UUID phoneId) {
-        return connectionService.connectToEDM(clientId, phoneId);
+                               @RequestParam String phoneId,
+                               @RequestParam String branchOfficeId) {
+        return connectionService.connectToEDM(clientId, phoneId, branchOfficeId);
     }
 }
 

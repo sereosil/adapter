@@ -20,7 +20,7 @@ public class AttributeEsbEntityConverter {
     public static final AttributeEsbEntityConverter INSTANCE = new AttributeEsbEntityConverter();
 
     public Contacts buildEsbEntity(final List<ContactAttribute> attributes) {
-        List<AddAttributesContact> esbAttributes = convert(attributes);
+        List<AddAttributesContact> esbAttributes = convertAll(attributes);
         final Contacts esbContacts = FACTORY.createContacts();
         esbContacts.setPackageHeader(HeaderFactory.create());
         for (AddAttributesContact attributesContact : esbAttributes) {
@@ -29,25 +29,37 @@ public class AttributeEsbEntityConverter {
         return esbContacts;
     }
 
-    public List<AddAttributesContact> convert(List<ContactAttribute> attributes) {
+    public Contacts buildEsbEntity(ContactAttribute attribute) {
+        AddAttributesContact esbAttribute = convert(attribute);
+        final Contacts esbContacts = FACTORY.createContacts();
+        esbContacts.setPackageHeader(HeaderFactory.create());
+        esbContacts.getAddAttributesContact().add(esbAttribute);
+        return esbContacts;
+    }
+
+    public List<AddAttributesContact> convertAll(List<ContactAttribute> attributes) {
         List<AddAttributesContact> esbAttributes = new ArrayList<>();
-        for (ContactAttribute contactProperty : attributes) {
-            AddAttributesContact esbContactProperty = new AddAttributesContact();
-            esbContactProperty.setContactID(
-                    FACTORY.createAddAttributesContactContactID(EsbTypesConversionUtils.convert(contactProperty.getContact()))
-            );
-            esbContactProperty.setDataType(
-                    FACTORY.createAddAttributesContactDataType(EsbTypesConversionUtils.convertPickList(contactProperty.getType()))
-            );
-            final AddAttributesContact.Name name = FACTORY.createAddAttributesContactName();
-            name.setValue(contactProperty.getName());
-            esbContactProperty.setName(FACTORY.createAddAttributesContactName(name));
-            final AddAttributesContact.Value value = FACTORY.createAddAttributesContactValue();
-            EsbStringAssigner.setEsbString(value, contactProperty.getValue());
-            esbContactProperty.setValue(FACTORY.createAddAttributesContactValue(value));
-            esbAttributes.add(esbContactProperty);
+        for (ContactAttribute attribute : attributes) {
+            esbAttributes.add(convert(attribute));
         }
         return esbAttributes;
+    }
+
+    public AddAttributesContact convert(ContactAttribute attribute) {
+        AddAttributesContact esbContactProperty = new AddAttributesContact();
+        esbContactProperty.setContactID(
+                FACTORY.createAddAttributesContactContactID(EsbTypesConversionUtils.convert(attribute.getContact()))
+        );
+        esbContactProperty.setDataType(
+                FACTORY.createAddAttributesContactDataType(EsbTypesConversionUtils.convertPickList(attribute.getType()))
+        );
+        final AddAttributesContact.Name name = FACTORY.createAddAttributesContactName();
+        name.setValue(attribute.getName());
+        esbContactProperty.setName(FACTORY.createAddAttributesContactName(name));
+        final AddAttributesContact.Value value = FACTORY.createAddAttributesContactValue();
+        EsbStringAssigner.setEsbString(value, attribute.getValue());
+        esbContactProperty.setValue(FACTORY.createAddAttributesContactValue(value));
+        return esbContactProperty;
     }
 }
 
